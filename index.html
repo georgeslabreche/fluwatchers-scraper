@@ -1,0 +1,84 @@
+<html>
+  <head>
+    <!-- Third party vendor scripts. -->
+    <script src="vendor/jQuery/jquery-3.5.1.min.js"></script>
+
+    <!-- Datatables.js -->
+    <link rel="stylesheet" type="text/css" href="vendor/DataTables/datatables.min.css"/>
+    <script type="text/javascript" src="vendor/DataTables/datatables.min.js"></script>
+
+    <script>
+      // Define the components of the GET URL.
+      var base_url = "https://webservices.maps.canada.ca/arcgis/rest/services/PHAC/fluwatchers_en/MapServer/0/";
+      var query_params = "query?f=json&where=(1%3D1)%20AND%20(1%3D1)&returnGeometry=false&spatialRel=esriSpatialRelIntersects&outFields=*&orderByFields=OBJECTID%20ASC&outSR=102100&resultOffset=0&resultRecordCount=";
+      var number_of_rows_to_fetch = 3000;
+
+      // Build the GET URL.
+      var query_url = base_url + query_params + number_of_rows_to_fetch;
+
+      // Row JSON obects will be stored in this array.
+      var rows = []
+
+      // Fetch JSON data.
+      $(document).ready(function() {
+        $.getJSON(query_url, function(data) {
+
+          // Loop through data and populate rows array.
+          data.features.forEach(
+            element => rows.push(element.attributes)
+          );
+
+          if(rows.length >= number_of_rows_to_fetch){
+            alert("Some data might be missing.\nContact Georges, he knows how to fix this.");
+          }
+
+          // Initialize datatable
+          $('#datatable').DataTable( {
+            "data": rows,
+            "paging": false,
+            "dom": 'Bfrtip',
+            "buttons": [
+                "copyHtml5",
+                "csvHtml5"
+            ],
+            "columns": [
+              { "data": "OBJECTID" },
+              { "data": "postal_code" },
+              { "data": "numfsa" },
+              { "data": "cf_pos" },
+              { "data": "percent" },
+              { "data": "week_starting_date" },
+              { "data": "week_ending_date" }
+            ]
+          });
+        });
+      });
+    </script>
+  </head>
+  <body style="padding:50px;">
+    <table id="datatable" class="display" style="width:100%">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Postal code</th>
+          <th>Number of participants</th>
+          <th>Number of reports of fever and cough</th>
+          <th>Percentage of participants reporting fever and cough</th>
+          <th>Week starting date</th>
+          <th>Week ending date</th>
+        </tr>
+      </thead>
+      <tfoot>
+        <tr>
+          <th>ID</th>
+          <th>Postal code</th>
+          <th>Number of participants</th>
+          <th>Number of reports of fever and cough</th>
+          <th>Percentage of participants reporting fever and cough</th>
+          <th>Week starting date</th>
+          <th>Week ending date</th>
+        </tr>
+      </tfoot>
+    </table>
+  </body>
+</html>
