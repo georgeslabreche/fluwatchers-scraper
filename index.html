@@ -32,15 +32,43 @@
             alert("Some data might be missing.\nContact Georges, he knows how to fix this.");
           }
 
+          // Filename for exported data.
+          var filename = "fluwatchers";
+          if(rows.length > 0){
+            filename = "fluwatchers_" + rows[0]["week_starting_date"].split("/").join("-") + "_" + rows[0]["week_ending_date"].split("/").join("-");
+          }
+
+
           // Initialize datatable
           $('#datatable').DataTable( {
             "data": rows,
             "paging": false,
             "dom": 'Bfrtip',
-            "buttons": [
-                "copyHtml5",
-                "csvHtml5",
-                "excelHtml5"
+            buttons: [
+              "copyHtml5",
+              ///'csvHtml5',
+              {
+                extend: 'csvHtml5',
+                text: 'CSV',
+                extension: '.csv',
+                exportOptions: {
+                  modifier: {
+                      page: 'current'
+                  }
+                },
+                title: filename
+              },
+              {
+                extend: 'excelHtml5',
+                text: 'Excel',
+                extension: '.xlsx',
+                exportOptions: {
+                  modifier: {
+                      page: 'current'
+                  }
+                },
+                title: filename
+              }
             ],
             "columns": [
               { "data": "OBJECTID" },
